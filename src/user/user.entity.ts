@@ -4,9 +4,7 @@ import {
   PrimaryGeneratedColumn,
   AfterInsert,
   AfterRemove,
-  OneToMany,
 } from 'typeorm';
-import { Auth } from '../auth/auth.entity';
 
 @Entity()
 export class User {
@@ -21,9 +19,6 @@ export class User {
 
   @Column()
   password: string;
-
-  @OneToMany(() => Auth, (auth) => auth.user)
-  tokens: Auth[];
 
   @AfterInsert()
   logInsert() {

@@ -1,6 +1,8 @@
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { ValidationPipe } from '@nestjs/common';
+import * as session from 'express-session';
+import * as process from 'process';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
@@ -9,6 +11,14 @@ async function bootstrap() {
       whitelist: true,
     }),
   );
+  app.use(
+    session({
+      secret: process.env.ACCESS_KEY,
+      resave: false,
+      saveUninitialized: false,
+    }),
+  );
   await app.listen(3000);
 }
+
 bootstrap();
