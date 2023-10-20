@@ -5,5 +5,8 @@ export class SignUpDto {
   email: string;
 
   @IsString()
+  username: string;
+
+  @IsString()
   password: string;
 }

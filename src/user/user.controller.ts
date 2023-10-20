@@ -5,17 +5,24 @@ import {
   Get,
   NotFoundException,
   Param,
-  Patch,
+  Put,
+  Req,
 } from '@nestjs/common';
 import { UserService } from './user.service';
 import { User } from './user.entity';
+import { UpdateUserDto } from './dto/update-user.dto';
+import { Serialize } from '../interceptors/serialize.interceptor';
+import { UserDto } from './dto/user.dto';
+import { Request } from 'express';
 
 @Controller('users')
+@Serialize(UserDto)
 export class UserController {
   constructor(private userService: UserService) {}
 
   @Get()
-  async getUsers() {
+  async getUsers(@Req() req: Request) {
+    console.log(req);
     return await this.userService.find();
   }
 
@@ -31,10 +38,10 @@ export class UserController {
     return user;
   }
 
-  @Patch(':id')
+  @Put(':id')
   async updateUser(
     @Param() params: Pick<User, 'id'>,
-    @Body() body: Partial<User>,
+    @Body() body: UpdateUserDto,
   ) {
     return this.userService.update(params.id, body);
   }

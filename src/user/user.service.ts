@@ -1,10 +1,9 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 import { User } from './user.entity';
 import { SignUpDto } from '../auth/dto/sign-up.dto';
-
-type NullablePartial<S, T> = T extends keyof S ? { [K in T]: S[K] } : never;
+import { NullablePartial } from '../types/nullable-partial.type';
 
 @Injectable()
 export class UserService {
@@ -15,7 +14,7 @@ export class UserService {
     return this.repo.save(user);
   }
 
-  findOne(attrs: NullablePartial<User, 'id' | 'email'>): Promise<User> {
+  findOne(attrs: NullablePartial<User, 'id' | 'email'>) {
     return this.repo.findOneBy({ ...attrs });
   }
 
@@ -27,7 +26,7 @@ export class UserService {
     const user = await this.repo.findOneBy({ id });
 
     if (!user) {
-      throw new Error('User not found.');
+      throw new NotFoundException('User not found.');
     }
 
     Object.assign(user, attrs);
@@ -38,7 +37,7 @@ export class UserService {
     const user = await this.repo.findOneBy({ id });
 
     if (!user) {
-      throw new Error('User not found.');
+      throw new NotFoundException('User not found.');
     }
 
     return this.repo.remove(user);

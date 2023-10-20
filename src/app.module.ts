@@ -6,18 +6,18 @@ import { UserModule } from './user/user.module';
 import { ReportController } from './report/report.controller';
 import { ReportService } from './report/report.service';
 import { ReportModule } from './report/report.module';
-import { User } from './user/user.entity';
-import { Report } from './report/report.entity';
 import { AuthModule } from './auth/auth.module';
+import { ConfigModule } from '@nestjs/config';
 
 @Module({
   imports: [
     TypeOrmModule.forRoot({
       type: 'sqlite',
       database: 'db.sqlite',
-      entities: [User, Report],
+      entities: [__dirname + '/../**/*.entity.js'],
       synchronize: true,
     }),
+    ConfigModule.forRoot(),
     UserModule,
     ReportModule,
     AuthModule,
