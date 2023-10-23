@@ -26,9 +26,4 @@ export class AuthController {
   async logout(@Session() session: any) {
     return (session.userId = null);
   }
-
-  @Post('refresh')
-  async refreshToken() {
-    return this.authService.refreshToken();
-  }
 }

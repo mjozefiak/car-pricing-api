@@ -23,7 +23,7 @@ describe('AuthService', () => {
       },
       create: ({ email, password, username }) => {
         const user = {
-          id: Math.floor(Math.random() * 10) + 1,
+          id: Math.floor(Math.random() * 100) + 1,
           email,
           password,
           username,
