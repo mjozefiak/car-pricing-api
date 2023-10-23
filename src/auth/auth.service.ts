@@ -1,7 +1,6 @@
 import {
   ConflictException,
   Injectable,
-  NotFoundException,
   UnauthorizedException,
 } from '@nestjs/common';
 import { UserService } from '../user/user.service';
@@ -35,7 +34,7 @@ export class AuthService {
     const user = await this.userService.findOne({ email });
 
     if (!user) {
-      throw new NotFoundException('User not found.');
+      throw new UnauthorizedException('User not found.');
     }
 
     if (!(await bcrypt.compare(password, user.password))) {
@@ -44,8 +43,4 @@ export class AuthService {
 
     return user;
   }
-
-  async logout() {}
-
-  async refreshToken() {}
 }
