@@ -4,8 +4,6 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { UserModule } from './user/user.module';
-import { ReportController } from './report/report.controller';
-import { ReportService } from './report/report.service';
 import { ReportModule } from './report/report.module';
 import { AuthModule } from './auth/auth.module';
 import { ConfigModule, ConfigService } from '@nestjs/config';
@@ -34,10 +32,9 @@ import { Report } from './report/report.entity';
     ReportModule,
     AuthModule,
   ],
-  controllers: [AppController, ReportController],
+  controllers: [AppController],
   providers: [
     AppService,
-    ReportService,
     {
       provide: APP_INTERCEPTOR,
       useClass: CurrentUserInterceptor,
