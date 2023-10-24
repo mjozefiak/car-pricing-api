@@ -8,18 +8,28 @@ import { ReportController } from './report/report.controller';
 import { ReportService } from './report/report.service';
 import { ReportModule } from './report/report.module';
 import { AuthModule } from './auth/auth.module';
-import { ConfigModule } from '@nestjs/config';
+import { ConfigModule, ConfigService } from '@nestjs/config';
 import { CurrentUserInterceptor } from './interceptors/current-user.interceptor';
+import { User } from './user/user.entity';
+import { Report } from './report/report.entity';
 
 @Module({
   imports: [
-    TypeOrmModule.forRoot({
-      type: 'sqlite',
-      database: 'db.sqlite',
-      entities: [__dirname + '/../**/*.entity.js'],
-      synchronize: true,
+    ConfigModule.forRoot({
+      isGlobal: true,
+      envFilePath: `.env.${process.env.NODE_ENV}`,
     }),
-    ConfigModule.forRoot(),
+    TypeOrmModule.forRootAsync({
+      inject: [ConfigService],
+      useFactory: (config: ConfigService) => {
+        return {
+          type: 'sqlite',
+          database: config.get('DB_NAME'),
+          entities: [User, Report],
+          synchronize: true,
+        };
+      },
+    }),
     UserModule,
     ReportModule,
     AuthModule,

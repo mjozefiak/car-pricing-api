@@ -12,7 +12,11 @@ describe('AuthController', () => {
   beforeEach(async () => {
     fakeAuthService = {
       async signup(user: SignUpDto): Promise<User> {
-        return Promise.resolve({ id: 1, ...user } as User);
+        return Promise.resolve({
+          id: 1,
+          email: user.email,
+          username: user.username,
+        } as User);
       },
       async signin({ email, password }: LoginDto): Promise<User> {
         return Promise.resolve({ id: 1, email, password } as User);
@@ -55,6 +59,10 @@ describe('AuthController', () => {
     };
     const user = await controller.signup(newUser);
 
-    expect(user).toEqual({ id: 1, ...newUser });
+    expect(user).toEqual({
+      id: 1,
+      email: newUser.email,
+      username: newUser.username,
+    });
   });
 });
