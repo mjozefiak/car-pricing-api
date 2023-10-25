@@ -6,15 +6,21 @@ import {
   Param,
   Post,
   UseGuards,
+  Patch,
+  Query,
+  HttpException,
+  HttpStatus,
 } from '@nestjs/common';
 import { CreateReportDto } from './dto/create-report.dto';
 import { ReportService } from './report.service';
-import { AuthGuard } from '../guards/auth.guard';
-import { CurrentUser } from '../decorators/current-user.decorator';
+import { AuthGuard } from '../guard/auth.guard';
+import { CurrentUser } from '../decorator/current-user.decorator';
 import { User } from '../user/user.entity';
-import { Report } from './report.entity';
-import { Serialize } from '../interceptors/serialize.interceptor';
+import { Serialize } from '../interceptor/serialize.interceptor';
 import { ReportDto } from './dto/report.dto';
+import { ApproveReportDto } from './dto/approve-report.dto';
+import { AdminGuard } from '../guard/admin.guard';
+import { GetEstimateDto } from './dto/get-estimate.dto';
 
 @Controller('reports')
 export class ReportController {
@@ -32,15 +38,34 @@ export class ReportController {
     return await this.reportService.findAll();
   }
 
+  @Get('estimate')
+  async getEstimate(@Query() query: GetEstimateDto) {
+    const estimation = await this.reportService.estimate(query);
+
+    if (!estimation.price) {
+      throw new HttpException(
+        'Not enough data to create this estimation.',
+        HttpStatus.ACCEPTED,
+      );
+    }
+
+    return estimation;
+  }
+
   @Get(':id')
-  async findOne(@Param() param: Pick<Report, 'id'>) {
-    console.log(param);
-    const report = await this.reportService.findOne(param.id);
+  async findOne(@Param('id') id: string) {
+    const report = await this.reportService.findOne(parseInt(id));
 
     if (!report) {
       throw new NotFoundException('Report not found.');
     }
 
     return report;
+  }
+
+  @Patch(':id')
+  @UseGuards(AdminGuard)
+  async approveReport(@Param('id') id: string, @Body() body: ApproveReportDto) {
+    return await this.reportService.changeApproval(parseInt(id), body.approved);
   }
 }

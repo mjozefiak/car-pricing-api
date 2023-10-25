@@ -12,11 +12,11 @@ import {
 import { UserService } from './user.service';
 import { User } from './user.entity';
 import { UpdateUserDto } from './dto/update-user.dto';
-import { Serialize } from '../interceptors/serialize.interceptor';
+import { Serialize } from '../interceptor/serialize.interceptor';
 import { UserDto } from './dto/user.dto';
 import { Request } from 'express';
-import { CurrentUser } from '../decorators/current-user.decorator';
-import { AuthGuard } from '../guards/auth.guard';
+import { CurrentUser } from '../decorator/current-user.decorator';
+import { AuthGuard } from '../guard/auth.guard';
 
 @Controller('users')
 @Serialize(UserDto)
@@ -40,9 +40,8 @@ export class UserController {
   }
 
   @Get(':id')
-  async getUser(@Param() params: Pick<User, 'id'>) {
-    const { id } = params;
-    const user = await this.userService.findOne({ id });
+  async getUser(@Param('id') id: string) {
+    const user = await this.userService.findOne({ id: parseInt(id) });
 
     if (!user) {
       throw new NotFoundException('User not found.');
@@ -52,15 +51,12 @@ export class UserController {
   }
 
   @Put(':id')
-  async updateUser(
-    @Param() params: Pick<User, 'id'>,
-    @Body() body: UpdateUserDto,
-  ) {
-    return this.userService.update(params.id, body);
+  async updateUser(@Param('id') id: string, @Body() body: UpdateUserDto) {
+    return this.userService.update(parseInt(id), body);
   }
 
   @Delete(':id')
-  async deleteUser(@Param() params: Pick<User, 'id'>) {
-    return this.userService.remove(params.id);
+  async deleteUser(@Param('id') id: string) {
+    return this.userService.remove(parseInt(id));
   }
 }

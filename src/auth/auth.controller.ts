@@ -2,7 +2,7 @@ import { Body, Controller, Post, Session } from '@nestjs/common';
 import { SignUpDto } from './dto/sign-up.dto';
 import { LoginDto } from './dto/login.dto';
 import { AuthService } from './auth.service';
-import { Serialize } from '../interceptors/serialize.interceptor';
+import { Serialize } from '../interceptor/serialize.interceptor';
 import { UserDto } from '../user/dto/user.dto';
 
 @Controller('auth')

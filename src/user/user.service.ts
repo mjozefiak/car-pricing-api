@@ -3,7 +3,7 @@ import { Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 import { User } from './user.entity';
 import { SignUpDto } from '../auth/dto/sign-up.dto';
-import { NullablePartial } from '../types/nullable-partial.type';
+import { NullablePartial } from '../type/nullable-partial.type';
 
 @Injectable()
 export class UserService {
