@@ -6,7 +6,7 @@ declare global {
   // eslint-disable-next-line @typescript-eslint/no-namespace
   namespace Express {
     interface Request {
-      currentUser?: User;
+      user?: User;
       session: {
         userId?: number;
       };
@@ -22,7 +22,7 @@ export class CurrentUserMiddleware implements NestMiddleware {
     const { userId } = req.session || {};
 
     if (userId) {
-      req.currentUser = await this.userService.findOne({ id: userId });
+      req.user = await this.userService.findOne({ id: userId });
     }
 
     next();

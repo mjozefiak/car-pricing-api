@@ -7,6 +7,7 @@ import {
   OneToMany,
 } from 'typeorm';
 import { Report } from '../report/report.entity';
+import { Auth } from '../auth/auth.entity';
 
 @Entity()
 export class User {
@@ -27,6 +28,9 @@ export class User {
 
   @OneToMany(() => Report, (report) => report.user)
   reports: Report[];
+
+  @OneToMany(() => Auth, (auth) => auth.user)
+  refreshTokens: Auth[];
 
   @AfterInsert()
   logInsert() {

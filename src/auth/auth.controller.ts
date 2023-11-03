@@ -1,12 +1,23 @@
-import { Body, Controller, Post, Session } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Post,
+  UseGuards,
+  Res,
+  Req,
+  HttpStatus,
+  HttpCode,
+} from '@nestjs/common';
 import { SignUpDto } from './dto/sign-up.dto';
-import { LoginDto } from './dto/login.dto';
 import { AuthService } from './auth.service';
-import { Serialize } from '../interceptor/serialize.interceptor';
-import { UserDto } from '../user/dto/user.dto';
+import { LocalAuthGuard } from './guard/local-auth.guard';
+import { Response, Request } from 'express';
+import { User } from '../user/user.entity';
+import { LogoutDto } from './dto/logout.dto';
+import { AccessAuthGuard } from './guard/access-auth.guard';
 
 @Controller('auth')
-@Serialize(UserDto)
+// @Serialize(UserDto)
 export class AuthController {
   constructor(private authService: AuthService) {}
 
@@ -15,15 +26,28 @@ export class AuthController {
     return this.authService.signup(body);
   }
 
-  @Post('signin')
-  async signin(@Body() body: LoginDto, @Session() session: any) {
-    const user = await this.authService.signin(body);
-    session.userId = user.id;
-    return user;
+  @HttpCode(HttpStatus.OK)
+  @UseGuards(AccessAuthGuard)
+  @Post('logout')
+  async logout(
+    @Req() req: Request,
+    @Res({ passthrough: true }) res: Response,
+    @Body() body: LogoutDto,
+  ) {
+    const refreshToken = req.cookies.refreshToken;
+    const user = req.user as User;
+    console.log(user);
+    await this.authService.logout(user.id, refreshToken, body.global);
+    return res.cookie('refreshToken', '');
   }
 
-  @Post('logout')
-  async logout(@Session() session: any) {
-    return (session.userId = null);
+  @UseGuards(LocalAuthGuard)
+  @Post('login')
+  async login(@Req() req: Request, @Res({ passthrough: true }) res: Response) {
+    const { refreshToken, accessToken } = await this.authService.login(
+      req.user as User,
+    );
+    res.cookie('refreshToken', refreshToken);
+    return { accessToken };
   }
 }
